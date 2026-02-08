@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MarkiGPT 1.0 (Web)</title>
     <style>
-        /* --- GROK STYLE THEME --- */
+      
         body {
             background-color: #000000;
             color: #FFFFFF;
@@ -15,7 +15,7 @@
             height: 100vh;
         }
 
-        /* Sidebar */
+     
         #sidebar {
             width: 300px;
             background-color: #111;
@@ -33,7 +33,7 @@
             border-radius: 10px;
         }
 
-        /* Main Chat Area */
+        
         #main {
             flex-grow: 1;
             display: flex;
@@ -46,7 +46,6 @@
         h1 { margin: 0; letter-spacing: -1px; }
         small { color: #888; }
 
-        /* Chat History */
         #chat-container {
             flex-grow: 1;
             overflow-y: auto;
@@ -70,7 +69,7 @@
         .message.assistant { background-color: transparent; align-self: flex-start; max-width: 100%; }
         .avatar { font-size: 24px; }
 
-        /* Input Area */
+       
         #input-area { display: flex; gap: 10px; }
 
         input[type="text"] {
@@ -100,7 +99,7 @@
         }
         button:hover { background-color: #cccccc; }
 
-        /* Code Blocks */
+     
         pre {
             background-color: #222;
             padding: 15px;
@@ -127,7 +126,6 @@
         <button onclick="downloadChat()">Download Conversation</button>
     </div>
 
-    <!-- MAIN APP -->
     <div id="main">
         <header>
             <h1>MarkiGPT 1.0</h1>
@@ -142,7 +140,6 @@
         </div>
     </div>
 
-    <!-- JAVASCRIPT LOGIC -->
     <script>
         const GENERIC_RESPONSES = [
             "I am processing your request...",
@@ -180,7 +177,7 @@
             msgDiv.className = `message ${role}`;
             const icon = role === 'user' ? '👤' : '⬛';
             
-            // Allow HTML for code blocks, otherwise treat as text
+            
             const displayContent = content.includes('<pre>') ? content : content.replace(/\n/g, '<br>');
             msgDiv.innerHTML = `<div class="avatar">${icon}</div><div>${displayContent}</div>`;
             
@@ -206,4 +203,5 @@
         document.getElementById('speed-slider').oninput = function() { document.getElementById('speed-val').innerText = this.value + "s"; }
     </script>
 </body>
+
 </html>
