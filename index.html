@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MarkiGPT 1.0 (Web)</title>
+    <title>MarkiGPT 1 (Web)</title>
     <style>
         
         body {
@@ -15,7 +15,7 @@
             height: 100vh;
         }
         
-        /* --- CLASSIC MODE (1.0) OVERRIDES --- */
+        
         body.classic-mode {
             background-color: #000000;
             font-family: monospace;
@@ -35,6 +35,24 @@
         }
         body.classic-mode .avatar { text-shadow: none; }
 
+        
+        body.pro-mode {
+            background: linear-gradient(45deg, #0f0c29, #302b63, #24243e);
+            background-size: 400% 400%;
+            animation: gradient 15s ease infinite;
+        }
+        body.pro-mode .message.user {
+            background-color: #6200ea;
+            box-shadow: 0 0 10px rgba(98, 0, 234, 0.5);
+        }
+        body.pro-mode .avatar {
+            text-shadow: 0 0 20px #fff;
+        }
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
         
         #sidebar {
             width: 300px;
@@ -155,7 +173,7 @@
         .setting-row input { width: 100%; padding: 10px; background: #0a0a0a; color: white; border: 1px solid #333; border-radius: 5px; box-sizing: border-box; }
         .close-btn { float: right; font-size: 24px; cursor: pointer; color: #888; }
 
-        /* Typing Animation */
+        
         .typing {
             display: flex;
             align-items: center;
@@ -192,6 +210,7 @@
             <h3>Settings</h3>
             <label style="color:#ccc; font-size:0.9em;">Version</label>
             <select id="version-select" onchange="changeVersion()" style="width:100%; padding:5px; margin-bottom:10px; background:#0a0a0a; color:white; border:1px solid #333; border-radius:5px;">
+                <option value="1.2 Pro">1.2 Pro (Ultimate)</option>
                 <option value="1.2">1.2 (Modern)</option>
                 <option value="1.0">1.0 (Classic)</option>
             </select>
@@ -248,7 +267,7 @@
             "I am MarkiGPT 1.0, running on local JavaScript logic.",
             "My calculations suggest that is correct.",
             "I am unable to connect to the mothership right now.",
-            "Beep boop. I am listening.",
+            "I am listening.",
             "I am analyzing the quantum fluctuations of your request.",
             "404: Context not found. Just kidding, I am listening."
         ];
@@ -272,7 +291,11 @@
             if (input.includes("python") || input.includes("code")) {
                 return "Here is a Python example for you:\n<pre><code>def hello_world():\n    print('Hello from MarkiGPT!')</code></pre>";
             }
-            return GENERIC_RESPONSES[Math.floor(Math.random() * GENERIC_RESPONSES.length)];
+            if (currentVersion.includes("Pro")) {
+                return PRO_RESPONSES[Math.floor(Math.random() * PRO_RESPONSES.length)];
+            } else {
+                return GENERIC_RESPONSES[Math.floor(Math.random() * GENERIC_RESPONSES.length)];
+            }
         }
 
         function addMessage(role, content) {
@@ -281,7 +304,7 @@
             msgDiv.className = `message ${role}`;
             const icon = role === 'user' ? '👤' : '🤖';
             
-            // Allow HTML for code blocks, otherwise treat as text
+            
             const displayContent = content.includes('<pre>') ? content : content.replace(/\n/g, '<br>');
             msgDiv.innerHTML = `<div class="avatar">${icon}</div><div>${displayContent}</div>`;
             
@@ -298,7 +321,7 @@
             addMessage('user', text);
             input.value = '';
 
-            // 1.0 Logic: Instant response, no animation
+            
             if (currentVersion === "1.0") {
                 addMessage('assistant', getResponse(text));
                 return;
@@ -306,7 +329,7 @@
 
             const speed = document.getElementById('speed-slider').value * 1000;
             
-            // Show typing indicator
+            
             const container = document.getElementById('chat-container');
             const typingDiv = document.createElement('div');
             typingDiv.className = 'message assistant';
@@ -343,17 +366,25 @@
             const v = document.getElementById('version-select').value;
             currentVersion = v;
             if (v === "1.0") {
+                document.body.classList.remove('pro-mode');
                 document.body.classList.add('classic-mode');
                 document.getElementById('adv-settings-btn').style.display = 'none';
                 document.querySelector('h1').innerText = "MarkiGPT 1.0";
-            } else {
+            } else if (v === "1.2") {
+                document.body.classList.remove('pro-mode');
                 document.body.classList.remove('classic-mode');
                 document.getElementById('adv-settings-btn').style.display = 'block';
                 document.querySelector('h1').innerText = "MarkiGPT 1.2";
+            } else {
+                document.body.classList.remove('classic-mode');
+                document.body.classList.add('pro-mode');
+                document.getElementById('adv-settings-btn').style.display = 'block';
+                document.querySelector('h1').innerText = "MarkiGPT 1.2 Pro";
             }
         }
     </script>
 </body>
 </html>
 </html>
+
 
