@@ -19,6 +19,19 @@ const GENERIC_RESPONSES = [
     "Let's keep chatting about that."
 ];
 
+const PRO_RESPONSES = [
+    "My advanced algorithms indicate that is a fascinating topic. Let's delve deeper.",
+    "I have analyzed your input and found multiple layers of meaning.",
+    "From a data-driven perspective, that is highly probable.",
+    "I am cross-referencing that with my internal knowledge base... Interesting.",
+    "That aligns with current predictive models of human conversation.",
+    "I'm simulating empathy right now, and I feel we are making progress.",
+    "My neural pathways are lighting up! Tell me more.",
+    "Processing... Optimization complete. That is a great point.",
+    "I can see why you'd say that. Logic dictates it is a valid conclusion.",
+    "Let's explore the theoretical implications of that statement."
+];
+
 console.log("🔵 MarkiGPT (JavaScript Version)");
 let version = "1.2";
 
@@ -38,15 +51,22 @@ function getResponse(input) {
         console.log("Goodbye!");
         process.exit(0);
     }
-    return GENERIC_RESPONSES[Math.floor(Math.random() * GENERIC_RESPONSES.length)];
+    if (version.includes("Pro")) {
+        return PRO_RESPONSES[Math.floor(Math.random() * PRO_RESPONSES.length)];
+    } else {
+        return GENERIC_RESPONSES[Math.floor(Math.random() * GENERIC_RESPONSES.length)];
+    }
 }
 
 
 function start() {
-    rl.question('Select Version (1.2 or 1.0): ', (v) => {
+    rl.question('Select Version (1.2 Pro, 1.2, or 1.0): ', (v) => {
         if (v.includes("1.0")) {
             version = "1.0";
             console.log("Loaded MarkiGPT 1.0 (Classic Mode). Type 'exit' to quit.\n");
+        } else if (v.includes("Pro")) {
+            version = "1.2 Pro";
+            console.log("Loaded MarkiGPT 1.2 Pro (Ultimate Mode). Type 'exit' to quit.\n");
         } else {
             console.log("Loaded MarkiGPT 1.2 (Modern Mode). Type 'exit' to quit.\n");
         }
@@ -63,8 +83,6 @@ function ask() {
 
 
 start();
-}
-
-
 
 ask();
+
