@@ -7,9 +7,9 @@
     <style>
         
         body {
-            background-color: #000000;
+            background-color: #1a1a1a;
             color: #FFFFFF;
-            font-family: monospace;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             display: flex;
             height: 100vh;
@@ -18,7 +18,7 @@
         
         #sidebar {
             width: 300px;
-            background-color: #111;
+            background: linear-gradient(180deg, #2c3e50 0%, #000000 100%);
             padding: 20px;
             border-right: 1px solid #333;
             display: flex;
@@ -43,7 +43,7 @@
             margin: 0 auto;
         }
 
-        h1 { margin: 0; letter-spacing: -1px; }
+        h1 { margin: 0; }
         small { color: #888; }
 
         
@@ -62,11 +62,11 @@
             display: flex;
             gap: 15px;
             padding: 10px;
-            border-radius: 8px;
+            border-radius: 20px;
             line-height: 1.5;
         }
 
-        .message.user { background-color: #1a1a1a; align-self: flex-end; max-width: 80%; }
+        .message.user { background-color: #007bff; align-self: flex-end; max-width: 80%; }
         .message.assistant { background-color: transparent; align-self: flex-start; max-width: 100%; }
         .avatar { font-size: 24px; }
 
@@ -78,9 +78,9 @@
             background-color: #0a0a0a;
             color: white;
             border: 1px solid #333;
-            border-radius: 8px;
+            border-radius: 25px;
             padding: 15px;
-            font-family: monospace;
+            font-family: inherit;
             font-size: 16px;
             outline: none;
         }
@@ -90,12 +90,12 @@
         button {
             background-color: #FFFFFF;
             color: black;
-            border-radius: 8px;
+            border-radius: 25px;
             border: none;
             font-weight: bold;
             padding: 10px 20px;
             cursor: pointer;
-            font-family: monospace;
+            font-family: inherit;
             transition: background 0.2s;
         }
         button:hover { background-color: #cccccc; }
@@ -271,4 +271,3 @@
     </script>
 </body>
 </html>
-
