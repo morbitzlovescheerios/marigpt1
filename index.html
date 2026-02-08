@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MarkiGPT 1.0 (Web)</title>
     <style>
-      
+        
         body {
             background-color: #000000;
             color: #FFFFFF;
@@ -15,7 +15,7 @@
             height: 100vh;
         }
 
-     
+        
         #sidebar {
             width: 300px;
             background-color: #111;
@@ -46,6 +46,7 @@
         h1 { margin: 0; letter-spacing: -1px; }
         small { color: #888; }
 
+        
         #chat-container {
             flex-grow: 1;
             overflow-y: auto;
@@ -69,7 +70,7 @@
         .message.assistant { background-color: transparent; align-self: flex-start; max-width: 100%; }
         .avatar { font-size: 24px; }
 
-       
+      
         #input-area { display: flex; gap: 10px; }
 
         input[type="text"] {
@@ -85,7 +86,7 @@
         }
         input[type="text"]:focus { border-color: #fff; }
 
-        /* Buttons */
+       
         button {
             background-color: #FFFFFF;
             color: black;
@@ -99,7 +100,7 @@
         }
         button:hover { background-color: #cccccc; }
 
-     
+      
         pre {
             background-color: #222;
             padding: 15px;
@@ -107,13 +108,38 @@
             overflow-x: auto;
             border: 1px solid #444;
         }
+
+
+        .modal {
+            display: none; 
+            position: fixed; 
+            z-index: 100; 
+            left: 0;
+            top: 0;
+            width: 100%; 
+            height: 100%; 
+            background-color: rgba(0,0,0,0.8); 
+        }
+        .modal-content {
+            background-color: #111;
+            margin: 10% auto; 
+            padding: 20px; 
+            border: 1px solid #333;
+            width: 80%; 
+            max-width: 400px;
+            border-radius: 10px;
+        }
+        .setting-row { margin-bottom: 15px; }
+        .setting-row label { display: block; margin-bottom: 5px; color: #ccc; }
+        .setting-row input { width: 100%; padding: 10px; background: #0a0a0a; color: white; border: 1px solid #333; border-radius: 5px; box-sizing: border-box; }
+        .close-btn { float: right; font-size: 24px; cursor: pointer; color: #888; }
     </style>
 </head>
 <body>
 
-    <!-- SIDEBAR -->
+  
     <div id="sidebar">
-        <!-- Tries to load logo.jpg, hides if missing -->
+     
         <img id="logo" src="logo.jpg" onerror="this.style.display='none'">
         
         <div>
@@ -124,8 +150,10 @@
 
         <button onclick="clearChat()">Clear Chat History</button>
         <button onclick="downloadChat()">Download Conversation</button>
+        <button onclick="openSettings()">Advanced Settings</button>
     </div>
 
+ 
     <div id="main">
         <header>
             <h1>MarkiGPT 1.0</h1>
@@ -140,6 +168,26 @@
         </div>
     </div>
 
+    
+    <div id="settingsModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeSettings()">&times;</span>
+            <h2>Advanced Settings</h2>
+            
+            <div class="setting-row">
+                <label>Your Username</label>
+                <input type="text" id="set-user" value="USER">
+            </div>
+            <div class="setting-row">
+                <label>AI Name</label>
+                <input type="text" id="set-ai" value="MarkiGPT">
+            </div>
+            
+            <button onclick="saveSettings()">Save Changes</button>
+        </div>
+    </div>
+
+    
     <script>
         const GENERIC_RESPONSES = [
             "I am processing your request...",
@@ -155,11 +203,15 @@
         ];
 
         let messages = [];
+        let config = {
+            user: "USER",
+            ai: "MarkiGPT"
+        };
 
         function getResponse(input) {
             input = input.toLowerCase();
-            if (input.includes("hello") || input.includes("hi")) return "Greetings! I am MarkiGPT. How can I assist you today?";
-            if (input.includes("name")) return "My name is MarkiGPT 1.0 (Web Edition).";
+            if (input.includes("hello") || input.includes("hi")) return `Greetings! I am ${config.ai}. How can I assist you today?`;
+            if (input.includes("name")) return `My name is ${config.ai} (Web Edition).`;
             if (input.includes("joke")) return "Why did the web developer walk out of the bar? He didn't like the table layout.";
             if (input.includes("music")) return "I have deleted my music database to focus on pure intelligence.";
             if (input.includes("weather")) return "I do not have windows, but I predict it is dark inside the browser.";
@@ -175,15 +227,16 @@
             const container = document.getElementById('chat-container');
             const msgDiv = document.createElement('div');
             msgDiv.className = `message ${role}`;
-            const icon = role === 'user' ? '👤' : '⬛';
+            const icon = role === 'user' ? '👤' : '🤖';
             
-            
+            // Allow HTML for code blocks, otherwise treat as text
             const displayContent = content.includes('<pre>') ? content : content.replace(/\n/g, '<br>');
             msgDiv.innerHTML = `<div class="avatar">${icon}</div><div>${displayContent}</div>`;
             
             container.appendChild(msgDiv);
             container.scrollTop = container.scrollHeight;
-            messages.push(`${role.toUpperCase()}: ${msgDiv.innerText}`);
+            const name = role === 'user' ? config.user : config.ai;
+            messages.push(`${name}: ${msgDiv.innerText}`);
         }
 
         function sendMessage() {
@@ -201,7 +254,21 @@
         function clearChat() { document.getElementById('chat-container').innerHTML = ''; messages = []; }
         function downloadChat() { const blob = new Blob([messages.join('\n')], {type: 'text/plain'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'markigpt_web.txt'; a.click(); }
         document.getElementById('speed-slider').oninput = function() { document.getElementById('speed-val').innerText = this.value + "s"; }
+
+       
+        function openSettings() {
+            document.getElementById('settingsModal').style.display = 'block';
+            document.getElementById('set-user').value = config.user;
+            document.getElementById('set-ai').value = config.ai;
+        }
+        function closeSettings() { document.getElementById('settingsModal').style.display = 'none'; }
+        function saveSettings() {
+            config.user = document.getElementById('set-user').value;
+            config.ai = document.getElementById('set-ai').value;
+            closeSettings();
+            addMessage('assistant', `Settings saved! I am now ${config.ai}.`);
+        }
     </script>
 </body>
-
 </html>
+
