@@ -10,51 +10,81 @@ st.set_page_config(page_title="MarkiGPT 1.0", page_icon="⬛", layout="centered"
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
+# --- VERSION SELECTOR ---
+with st.sidebar:
+    if os.path.exists("logo.png"):
+        st.image("logo.png", use_container_width=True)
+    elif os.path.exists("logo.jpg"):
+        st.image("logo.jpg", use_container_width=True)
+        
+    st.header("Settings")
+    version = st.selectbox("Version", ["1.2", "1.0"])
 
-st.markdown("""
-<style>
-    /* Main Background */
-    .stApp {
-        background-color: #1a1a1a;
-        color: #FFFFFF;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-    
-    /* Input Box Styling */
-    .stTextInput input {
-        background-color: #0a0a0a;
-        color: white;
-        border: 1px solid #333;
-        border-radius: 25px;
-    }
-    
-    /* Buttons (High Contrast White on Black) */
-    div.stButton > button {
-        background-color: #FFFFFF;
-        color: black;
-        border-radius: 25px;
-        border: none;
-        font-weight: bold;
-        width: 100%;
-    }
-    div.stButton > button:hover {
-        background-color: #cccccc;
-        border: none;
-        color: black;
-    }
-
-    /* Headers */
-    h1, h2, h3 {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        font-weight: 700;
-    }
-    
-    /* Metrics */
-    div[data-testid="stMetricValue"] {
-        color: #FFFFFF;
-    }
-</style>
-""", unsafe_allow_html=True)
+if version == "1.2":
+    # --- 1.2 MODERN THEME ---
+    st.markdown("""
+    <style>
+        .stApp {
+            background-color: #1a1a1a;
+            color: #FFFFFF;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .stTextInput input {
+            background-color: #0a0a0a;
+            color: white;
+            border: 1px solid #333;
+            border-radius: 25px;
+        }
+        div.stButton > button {
+            background-color: #FFFFFF;
+            color: black;
+            border-radius: 25px;
+            border: none;
+            font-weight: bold;
+            width: 100%;
+        }
+        div.stButton > button:hover {
+            background-color: #cccccc;
+            border: none;
+            color: black;
+        }
+        h1, h2, h3 {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-weight: 700;
+        }
+    </style>
+    """, unsafe_allow_html=True)
+else:
+    # --- 1.0 CLASSIC THEME ---
+    st.markdown("""
+    <style>
+        .stApp {
+            background-color: #000000;
+            color: #FFFFFF;
+            font-family: monospace;
+        }
+        .stTextInput input {
+            background-color: #111;
+            color: white;
+            border: 1px solid #333;
+            border-radius: 5px;
+            font-family: monospace;
+        }
+        div.stButton > button {
+            background-color: #FFFFFF;
+            color: black;
+            border-radius: 5px;
+            border: none;
+            font-weight: bold;
+            width: 100%;
+            font-family: monospace;
+        }
+        h1, h2, h3 {
+            font-family: monospace;
+            font-weight: 700;
+        }
+    </style>
+    """, unsafe_allow_html=True)
 
 
 GENERIC_RESPONSES = [
@@ -96,21 +126,16 @@ def hello_world():
         return random.choice(GENERIC_RESPONSES)
 
 
-st.title("MarkiGPT 1.0")
+st.title(f"MarkiGPT {version}")
 st.caption("A custom-built Artificial Intelligence.")
 
 
 with st.sidebar:
-   
-    if os.path.exists("logo.png"):
-        st.image("logo.png", use_container_width=True)
-    elif os.path.exists("logo.jpg"):
-        st.image("logo.jpg", use_container_width=True)
-
-    st.header("Settings")
-    
-   
-    thinking_time = st.slider("Thinking Time (seconds)", 0.0, 5.0, 1.0)
+    # Only show advanced settings in 1.2
+    if version == "1.2":
+        thinking_time = st.slider("Thinking Time (seconds)", 0.0, 5.0, 1.0)
+    else:
+        thinking_time = 0 # Instant in 1.0
 
     if st.button("Clear Chat History"):
         st.session_state.messages = []
@@ -145,4 +170,4 @@ if prompt := st.chat_input("Message MarkiGPT..."):
             st.markdown(response)
             
    
-    st.session_state.messages.append({"role": "assistant", "content": response})})
+    st.session_state.messages.append({"role": "assistant", "content": response})
