@@ -19,8 +19,8 @@ const GENERIC_RESPONSES = [
     "Let's keep chatting about that."
 ];
 
-console.log("🔵 MarkiGPT 1.0 (JavaScript Version)");
-console.log("Type 'exit' to quit.\n");
+console.log("🔵 MarkiGPT (JavaScript Version)");
+let version = "1.2";
 
 function getResponse(input) {
     input = input.toLowerCase();
@@ -42,12 +42,29 @@ function getResponse(input) {
 }
 
 
+function start() {
+    rl.question('Select Version (1.2 or 1.0): ', (v) => {
+        if (v.includes("1.0")) {
+            version = "1.0";
+            console.log("Loaded MarkiGPT 1.0 (Classic Mode). Type 'exit' to quit.\n");
+        } else {
+            console.log("Loaded MarkiGPT 1.2 (Modern Mode). Type 'exit' to quit.\n");
+        }
+        ask();
+    });
+}
+
 function ask() {
     rl.question('You: ', (input) => {
         console.log('MarkiGPT: ' + getResponse(input) + '\n');
         ask();
     });
 }
+
+
+start();
+}
+
 
 
 ask();
