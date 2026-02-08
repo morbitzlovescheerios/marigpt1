@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MarkiGPT 1.0 (Web)</title>
+    <style>
+        /* --- GROK STYLE THEME --- */
+        body {
+            background-color: #000000;
+            color: #FFFFFF;
+            font-family: monospace;
+            margin: 0;
+            display: flex;
+            height: 100vh;
+        }
+
+        /* Sidebar */
+        #sidebar {
+            width: 300px;
+            background-color: #111;
+            padding: 20px;
+            border-right: 1px solid #333;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        #logo {
+            width: 100%;
+            max-width: 200px;
+            display: block;
+            border-radius: 10px;
+        }
+
+        /* Main Chat Area */
+        #main {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 { margin: 0; letter-spacing: -1px; }
+        small { color: #888; }
+
+        /* Chat History */
+        #chat-container {
+            flex-grow: 1;
+            overflow-y: auto;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            padding-right: 10px;
+        }
+
+        .message {
+            display: flex;
+            gap: 15px;
+            padding: 10px;
+            border-radius: 8px;
+            line-height: 1.5;
+        }
+
+        .message.user { background-color: #1a1a1a; align-self: flex-end; max-width: 80%; }
+        .message.assistant { background-color: transparent; align-self: flex-start; max-width: 100%; }
+        .avatar { font-size: 24px; }
+
+        /* Input Area */
+        #input-area { display: flex; gap: 10px; }
+
+        input[type="text"] {
+            flex-grow: 1;
+            background-color: #0a0a0a;
+            color: white;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: monospace;
+            font-size: 16px;
+            outline: none;
+        }
+        input[type="text"]:focus { border-color: #fff; }
+
+        /* Buttons */
+        button {
+            background-color: #FFFFFF;
+            color: black;
+            border-radius: 8px;
+            border: none;
+            font-weight: bold;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-family: monospace;
+            transition: background 0.2s;
+        }
+        button:hover { background-color: #cccccc; }
+
+        /* Code Blocks */
+        pre {
+            background-color: #222;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            border: 1px solid #444;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- SIDEBAR -->
+    <div id="sidebar">
+        <!-- Tries to load logo.jpg, hides if missing -->
+        <img id="logo" src="logo.jpg" onerror="this.style.display='none'">
+        
+        <div>
+            <h3>Settings</h3>
+            <label style="color:#ccc; font-size:0.9em;">Thinking Time: <span id="speed-val">1.0s</span></label>
+            <input type="range" id="speed-slider" min="0" max="5" step="0.5" value="1" style="width:100%">
+        </div>
+
+        <button onclick="clearChat()">Clear Chat History</button>
+        <button onclick="downloadChat()">Download Conversation</button>
+    </div>
+
+    <!-- MAIN APP -->
+    <div id="main">
+        <header>
+            <h1>MarkiGPT 1.0</h1>
+            <small>A custom-built Artificial Intelligence (Web Version)</small>
+        </header>
+
+        <div id="chat-container"></div>
+
+        <div id="input-area">
+            <input type="text" id="user-input" placeholder="Message MarkiGPT..." onkeypress="handleKeyPress(event)" autocomplete="off">
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        const GENERIC_RESPONSES = [
+            "I am processing your request...",
+            "That is a very interesting perspective.",
+            "As an AI, I don't have feelings, but if I did, I'd be confused.",
+            "Could you please rephrase that?",
+            "I am MarkiGPT 1.0, running on local JavaScript logic.",
+            "My calculations suggest that is correct.",
+            "I am unable to connect to the mothership right now.",
+            "Beep boop. I am listening.",
+            "I am analyzing the quantum fluctuations of your request.",
+            "404: Context not found. Just kidding, I am listening."
+        ];
+
+        let messages = [];
+
+        function getResponse(input) {
+            input = input.toLowerCase();
+            if (input.includes("hello") || input.includes("hi")) return "Greetings! I am MarkiGPT. How can I assist you today?";
+            if (input.includes("name")) return "My name is MarkiGPT 1.0 (Web Edition).";
+            if (input.includes("joke")) return "Why did the web developer walk out of the bar? He didn't like the table layout.";
+            if (input.includes("music")) return "I have deleted my music database to focus on pure intelligence.";
+            if (input.includes("weather")) return "I do not have windows, but I predict it is dark inside the browser.";
+            if (input.includes("meaning of life")) return "42. Obviously.";
+            if (input.includes("status")) return "All systems operational. Browser memory is nominal.";
+            if (input.includes("python") || input.includes("code")) {
+                return "Here is a Python example for you:\n<pre><code>def hello_world():\n    print('Hello from MarkiGPT!')</code></pre>";
+            }
+            return GENERIC_RESPONSES[Math.floor(Math.random() * GENERIC_RESPONSES.length)];
+        }
+
+        function addMessage(role, content) {
+            const container = document.getElementById('chat-container');
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `message ${role}`;
+            const icon = role === 'user' ? '👤' : '⬛';
+            
+            // Allow HTML for code blocks, otherwise treat as text
+            const displayContent = content.includes('<pre>') ? content : content.replace(/\n/g, '<br>');
+            msgDiv.innerHTML = `<div class="avatar">${icon}</div><div>${displayContent}</div>`;
+            
+            container.appendChild(msgDiv);
+            container.scrollTop = container.scrollHeight;
+            messages.push(`${role.toUpperCase()}: ${msgDiv.innerText}`);
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('user-input');
+            const text = input.value.trim();
+            if (!text) return;
+            addMessage('user', text);
+            input.value = '';
+
+            const speed = document.getElementById('speed-slider').value * 1000;
+            setTimeout(() => addMessage('assistant', getResponse(text)), speed);
+        }
+
+        function handleKeyPress(e) { if (e.key === 'Enter') sendMessage(); }
+        function clearChat() { document.getElementById('chat-container').innerHTML = ''; messages = []; }
+        function downloadChat() { const blob = new Blob([messages.join('\n')], {type: 'text/plain'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'markigpt_web.txt'; a.click(); }
+        document.getElementById('speed-slider').oninput = function() { document.getElementById('speed-val').innerText = this.value + "s"; }
+    </script>
+</body>
+</html>
