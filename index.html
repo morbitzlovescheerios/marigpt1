@@ -14,6 +14,26 @@
             display: flex;
             height: 100vh;
         }
+        
+        /* --- CLASSIC MODE (1.0) OVERRIDES --- */
+        body.classic-mode {
+            background-color: #000000;
+            font-family: monospace;
+        }
+        body.classic-mode #sidebar {
+            background: #111;
+        }
+        body.classic-mode .message {
+            border-radius: 5px;
+        }
+        body.classic-mode .message.user {
+            background-color: #333;
+        }
+        body.classic-mode button, body.classic-mode input {
+            border-radius: 5px;
+            font-family: monospace;
+        }
+        body.classic-mode .avatar { text-shadow: none; }
 
         
         #sidebar {
@@ -170,13 +190,18 @@
         
         <div>
             <h3>Settings</h3>
+            <label style="color:#ccc; font-size:0.9em;">Version</label>
+            <select id="version-select" onchange="changeVersion()" style="width:100%; padding:5px; margin-bottom:10px; background:#0a0a0a; color:white; border:1px solid #333; border-radius:5px;">
+                <option value="1.2">1.2 (Modern)</option>
+                <option value="1.0">1.0 (Classic)</option>
+            </select>
             <label style="color:#ccc; font-size:0.9em;">Thinking Time: <span id="speed-val">1.0s</span></label>
             <input type="range" id="speed-slider" min="0" max="5" step="0.5" value="1" style="width:100%">
         </div>
 
         <button onclick="clearChat()">Clear Chat History</button>
         <button onclick="downloadChat()">Download Conversation</button>
-        <button onclick="openSettings()">Advanced Settings</button>
+        <button id="adv-settings-btn" onclick="openSettings()">Advanced Settings</button>
     </div>
 
  
@@ -233,6 +258,7 @@
             user: "USER",
             ai: "MarkiGPT"
         };
+        let currentVersion = "1.2";
 
         function getResponse(input) {
             input = input.toLowerCase();
@@ -272,6 +298,12 @@
             addMessage('user', text);
             input.value = '';
 
+            // 1.0 Logic: Instant response, no animation
+            if (currentVersion === "1.0") {
+                addMessage('assistant', getResponse(text));
+                return;
+            }
+
             const speed = document.getElementById('speed-slider').value * 1000;
             
             // Show typing indicator
@@ -306,6 +338,22 @@
             closeSettings();
             addMessage('assistant', `Settings saved! I am now ${config.ai}.`);
         }
+
+        function changeVersion() {
+            const v = document.getElementById('version-select').value;
+            currentVersion = v;
+            if (v === "1.0") {
+                document.body.classList.add('classic-mode');
+                document.getElementById('adv-settings-btn').style.display = 'none';
+                document.querySelector('h1').innerText = "MarkiGPT 1.0";
+            } else {
+                document.body.classList.remove('classic-mode');
+                document.getElementById('adv-settings-btn').style.display = 'block';
+                document.querySelector('h1').innerText = "MarkiGPT 1.2";
+            }
+        }
     </script>
 </body>
 </html>
+</html>
+
